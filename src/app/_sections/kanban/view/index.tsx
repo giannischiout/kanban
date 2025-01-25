@@ -73,8 +73,9 @@ export type ActiveState = {
 
 
 // helper functions:
-const isItem = (activeType: string, overType: string) => {
-	return activeType === 'item' && overType === "item"
+const getType = (activeType: string, overType: string) => {
+	if(activeType === 'item' && overType === "item") return 'isItem';
+	if(activeType === 'column' && overType === "column") return 'isColumn';
 }
 
 const getModifiers = (type: string | null) => {
@@ -119,20 +120,20 @@ export function KanbanView({kanbanId: tab}: Props) {
 
 	const handleDragEnd = useCallback((event: DragEndEvent) => {
 		const {active, over} = event;
-		// type can be "item" or "column" update either the moving columns, or the items inside:
+		if (!over?.id || active.id === over.id) return;
+		//
 		const activeType = active?.data?.current?.type;
 		const overType = over?.data?.current?.type;
-		if (!over?.id) return;
+		const actionType = getType(activeType, overType);
 
-		if(!isItem(activeType, overType)) {
+		if(actionType === 'isColumn') {
 			const oldIndex = kanban.columnOrder.indexOf(active.id as string)
 			const newIndex = kanban.columnOrder.indexOf(over?.id as string)
 
 			const newOrder = arrayMove(kanban.columnOrder, oldIndex, newIndex)
 			setKanban((prev) => ({...prev, columnOrder: newOrder}))
 		}
-
-		if(isItem(activeType, overType) && active.id !== over?.id) {
+		if(actionType === 'isItem') {
 			// get columns:
 			const activeColumn = active?.data.current?.columnId;
 			const activeTasks = kanban.columns[activeColumn].taskIds
@@ -154,9 +155,7 @@ export function KanbanView({kanbanId: tab}: Props) {
 					}
 				}
 			})
-
  		}
-
 	}, [kanban])
 
 	const handleDragOver = useCallback((event: DragOverEvent) => {
