@@ -1,8 +1,8 @@
 import { cloneElement, ReactElement } from "react";
 
 type IconButtonProps = {
-	children: ReactElement; // A single React element as a child
-	size?: "small" | "medium"; // Restrict size to specific options
+	children: ReactElement<{size: number}>;
+	size?: "small" | "medium";
 };
 
 export function IconButton({ children, size = 'small' }: IconButtonProps) {

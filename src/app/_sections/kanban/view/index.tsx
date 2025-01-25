@@ -1,55 +1,37 @@
 'use client';
+
 import {BreadCrumbs} from "@/app/_components/breadcrumbs";
 import {Button} from "@/components/ui/button";
 import {ArrowUpDown, ListFilter} from "lucide-react";
-import {ReactNode, useState} from "react";
+import {act, ReactNode, useCallback, useEffect, useState} from "react";
 import {IKanbanColumn, ITask} from "@/app/types/kanban";
 import {Container} from "@/app/_sections/kanban/components/container";
 import {KanbanCard} from "@/app/_sections/kanban/components/kanban-card";
+import {
+	closestCenter,
+	DndContext, DragEndEvent, DragOverEvent,
+	DragOverlay,
+	DragStartEvent,
+	PointerSensor, UniqueIdentifier,
+	useSensor,
+	useSensors
+} from "@dnd-kit/core";
+import {
+	arrayMove,
+	horizontalListSortingStrategy,
+	SortableContext,
+	verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import {TASKS} from "@/app/mock";
+import {
 
+	restrictToHorizontalAxis,
+} from '@dnd-kit/modifiers';
 
 type Props = {
 	kanbanId: string
 }
 
-
-
-const TASKS = {
-	"task-1": {
-		id: "task-1",
-		title: "Task 1",
-		description: "Description for task 1",
-		priority: 'high',
-		comments: 2,
-		attachments: 2,
-		contributors: [
-			{
-				id: 200,
-				name: 'Angela',
-				image: '/profile.jpg'
-			},	{
-				id: 201,
-				name: 'Vasilis',
-				image: '/profile-2.jpg'
-			}
-		]
-	},
-	"task-2": {
-		id: "task-2",
-		title: "Task 2",
-		comments: 2,
-		description: "Description for task 2",
-		priority: 'medium',
-		attachments: 4,
-		contributors: [
-				{
-				id: 202,
-				name: 'Vasilis',
-				image: '/profile-4.jpg'
-			}
-		]
-	},
-}
 
 const INITIAL_STATE = {
 	columns: {
@@ -57,8 +39,7 @@ const INITIAL_STATE = {
 			id: 'open',
 			color: 'yellow',
 			title: 'open',
-			taskIds: ['task-1']
-
+			taskIds: ['task-1', 'task-3']
 		},
 		'progress': {
 			id: 'progress',
@@ -78,62 +59,234 @@ const INITIAL_STATE = {
 }
 
 
-type KanbanState = {
+export type KanbanState = {
 	columns: Record<string, IKanbanColumn>;
-	tasks:Record<string, ITask>;
+	tasks: Record<string, ITask>;
 	columnOrder: string[];
 };
-export function KanbanView({kanbanId: tab}: Props){
+
+export type ActiveState = {
+	id: UniqueIdentifier;
+	type: 'column' | 'item' | '';
+	columnId: string;
+}
+
+
+// helper functions:
+const isItem = (activeType: string, overType: string) => {
+	return activeType === 'item' && overType === "item"
+}
+
+const getModifiers = (type: string | null) => {
+	if (type === 'column') {
+		return [restrictToHorizontalAxis]; // Restrict movement to horizontal axis for columns
+	} else {
+		return []; // No restrictions, allowing free movement for kanban cards
+	}
+};
+
+const findItemIndex = (array: IKanbanColumn['taskIds'], key:UniqueIdentifier) => {
+	return array.findIndex(itemId => itemId === key.toString())
+}
+
+
+
+// ======================================================== =========================================
+// ======================================== DND KANBAN VIEW =========================================
+// ======================================================== =========================================
+
+
+export function KanbanView({kanbanId: tab}: Props) {
 	const [kanban, setKanban] = useState<KanbanState>(INITIAL_STATE)
-	console.log({kanban})
+	const [active, setActive] = useState<ActiveState>({
+		id: '',
+		type: '',
+		columnId: '',
+	})
+
+	const sensors = useSensors(useSensor(PointerSensor));
+
+
+	const handleDragStart = useCallback((event: DragStartEvent) => {
+		const {id} = event.active;
+		const type = event?.active?.data?.current?.type;
+		const columnId = event?.active?.data?.current?.columnId;
+
+		setActive(prev => ({...prev, id, type, columnId: columnId ?? ""}))
+	}, [])
+
+
+
+	const handleDragEnd = useCallback((event: DragEndEvent) => {
+		const {active, over} = event;
+		// type can be "item" or "column" update either the moving columns, or the items inside:
+		const activeType = active?.data?.current?.type;
+		const overType = over?.data?.current?.type;
+		if (!over?.id) return;
+
+		if(!isItem(activeType, overType)) {
+			const oldIndex = kanban.columnOrder.indexOf(active.id as string)
+			const newIndex = kanban.columnOrder.indexOf(over?.id as string)
+
+			const newOrder = arrayMove(kanban.columnOrder, oldIndex, newIndex)
+			setKanban((prev) => ({...prev, columnOrder: newOrder}))
+		}
+
+		if(isItem(activeType, overType) && active.id !== over?.id) {
+			// get columns:
+			const activeColumn = active?.data.current?.columnId;
+			const activeTasks = kanban.columns[activeColumn].taskIds
+			// get item indexes:
+			const activeIndex = findItemIndex(activeTasks, active?.id)
+			const overIndex = findItemIndex(activeTasks, over?.id)
+			// use dnd-kit helper function to reorder array:
+			const newArray = arrayMove(activeTasks,  overIndex, activeIndex,);
+			// update the new state:
+			setKanban((prev) => {
+				return {
+					...prev,
+					columns: {
+						...prev.columns,
+						[activeColumn]: {
+							...prev.columns[activeColumn],
+							taskIds: newArray,
+						}
+					}
+				}
+			})
+
+ 		}
+
+	}, [kanban])
+
+	const handleDragOver = useCallback((event: DragOverEvent) => {
+		const {active, over} = event;
+		//
+		const activeColumnId = active.data?.current?.columnId;
+		const overColumnId = over?.data?.current?.columnId;
+		//
+		const activeType = active.data?.current?.type;
+		if(activeType === 'item' && overColumnId && activeColumnId !== overColumnId) {
+			//
+			let updatedActive = [...kanban.columns[activeColumnId].taskIds]
+			let updatedOver = [...kanban.columns[overColumnId].taskIds]
+			//
+			const overIndex = kanban.columns[overColumnId].taskIds.findIndex((taskId) => taskId === over?.id)
+			updatedOver.splice(overIndex, 0, active.id.toString()); // Insert task at correct position
+			updatedActive = updatedActive.filter(taskId => taskId !== active.id)
+			setKanban((prev) => ({
+				...prev,
+				columns: {
+					...prev.columns,
+					[activeColumnId]: {
+						 ...prev.columns[activeColumnId as keyof KanbanState],
+						taskIds: updatedActive,
+					},
+					[overColumnId]: {
+						...prev.columns[overColumnId as keyof KanbanState],
+						taskIds: updatedOver
+					}
+				}
+			}))
+		}
+
+
+	}, [kanban])
+
+
+
 	return (
 		<main
 			style={{height: 'calc(100vh - 50px)'}}
 			className="w-[95%] mx-auto grid grid-rows-[auto_auto_1fr]"
 		>
-			<BreadCrumbs tab={tab} />
+			<BreadCrumbs tab={tab}/>
 			<div className=" flex flex-colo gap-2 items-center mb-1 mt-2">
 				<GhostButton>
-					<ListFilter />
+					<ListFilter/>
 					filter
 				</GhostButton>
 				<GhostButton>
-					<ArrowUpDown />
+					<ArrowUpDown/>
 					sort
 				</GhostButton>
 			</div>
-			<div className="pb-4 pt-1  overflow-hidden flex flex-row gap-2 overflow-x-auto">
-				{
-					Object.entries(kanban.columns).map(([key, column]) => {
-						return (
-							<Container  key={key} column={column}  >
-								{kanban.columns[key].taskIds.map((taskId, index) => {
+			<DndContext
+				modifiers={getModifiers(active?.type)}
+				sensors={sensors}
+				collisionDetection={closestCenter}
+				onDragEnd={handleDragEnd}
+				onDragStart={handleDragStart}
+				onDragOver={handleDragOver}
+			>
+				<SortableContext items={kanban.columnOrder} strategy={horizontalListSortingStrategy}>
+					<div className="pb-4 pt-1  overflow-hidden flex flex-row gap-2 overflow-x-auto">
+						{kanban.columnOrder.map((columnId) => {
+							const column = kanban.columns[columnId]
+							return (
+								<Container key={columnId} column={column} id={columnId}>
+									<SortableContext items={column.taskIds || []} strategy={verticalListSortingStrategy}>
+										{
+											column.taskIds.map((taskId) => {
+												const taskItem = kanban.tasks[taskId];
+												return (
+													<KanbanCard
+															active={active}
+															key={taskId}
+															id={taskId}
+															columnId={columnId}
+															item={taskItem}
+														/>
+												)
+											})
+										}
+										{/*{column.taskIds.map((taskId) => {*/}
+										{/*	return (*/}
+										{/*		<KanbanCard*/}
+										{/*			active={active}*/}
+										{/*			key={taskId}*/}
+										{/*			id={taskId}*/}
+										{/*			columnId={columnId}*/}
+										{/*			item={kanban.tasks[taskId]}*/}
+										{/*		/>*/}
+										{/*	);*/}
+										{/*})}*/}
+									</SortableContext>
+								</Container>
+							)
+						})}
+					</div>
+				</SortableContext>
+				<DragOverlay>
+					{
+						active.id && active.type === 'column' && (
+							<Container column={kanban.columns[active.id]} id={active.id}>
+								{kanban.columns[active.id].taskIds.map((taskId, index) => {
 									return (
-										<KanbanCard key={index} item={kanban.tasks[taskId]} />
+										<KanbanCard columnId={active.id.toString()} id={taskId} key={index} item={kanban.tasks[taskId]}/>
 									)
 								})}
 							</Container>
 						)
-					})
-				}
-			</div>
+
+					}
+					{
+						active.id && active.type === 'item' && (
+							<KanbanCard columnId={active.columnId}  id={active.id.toString()} item={kanban.tasks[active.id]}/>
+						)
+					}
+				</DragOverlay>
+			</DndContext>
+
 		</main>
 	);
 }
 
 
-
-
-
-
-
-
-
-
-
 type GhostButtonProps = {
 	children: ReactNode;
 }
+
 export function GhostButton({children}: GhostButtonProps) {
 	return (
 		<Button className="text-muted px-2 tracking-wide hover:bg-card" variant="ghost">

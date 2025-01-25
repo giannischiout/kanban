@@ -28,7 +28,16 @@ export default {
 					foreground: 'var(--card-foreground)',
 					light: 'var(--card-light)',
 				},
-				surface: 'var(--surface)',
+				surface: {
+					DEFAULT: 'var(--surface)',
+					300: 'var(--surface300)', // Lighter surface color
+					400: 'var(--surface400)',
+					500: 'var(--surface500)', // Base surface color
+					600: 'var(--surface600)',
+					700: 'var(--surface700)',
+					800: 'var(--surface800)',
+					900: 'var(--surface900)', // Darker surface color
+				},
 				popover: {
 					DEFAULT: 'var(--popover)',
 					foreground: 'var(--popover-foreground)',

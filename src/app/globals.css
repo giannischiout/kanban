@@ -11,15 +11,18 @@ body {
     /* Base colors for dark mode with a grey tone */
     --background: #111111; /* Dark grey background */
     --foreground: #e0e0e0; /* Light grey foreground */
-    --surface: #1f1f1f; /* Slightly darker grey for surface color */
-
-
-    /*gray shades:*/
+    /* ============================================= */
+    --surface300: #333333; /* Lighter gray */
+    --surface400: #2c2c2c;
+    --surface500: #242323; /* Base color */
+    --surface600: #1a1a1a;
+    --surface700: #141414;
+    --surface800: #0f0f0f;
+    --surface900: #0a0a0a; /* Darker gray *
+    /* ============================================= */
 
 
     --card: #1c1c1c;
-
-    /* used in kanbanitem */
     --card-light: #2e2e2e;
     --card-foreground: #e0e0e0; /* Light grey for card text */
     --popover: #434343; /* Same as card for consistency */

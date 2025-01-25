@@ -1,25 +1,43 @@
 import {ITask} from "@/app/types/kanban";
 import {Priority} from "@/components/priority";
-import {Ellipsis, MessageSquare, Paperclip} from "lucide-react";
+import {Ellipsis, Grip, MessageSquare, Paperclip} from "lucide-react";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {IconWithText} from "@/app/_components/icon-with-text";
+import {useSortable} from "@dnd-kit/sortable";
+import {ActiveState} from "@/app/_sections/kanban/view";
 
 
-
-
-export function KanbanCard({item}: {item: ITask})
-{
+export function KanbanCard({item, id, active, columnId}: {item: ITask, id: string, active?: ActiveState, columnId: string}) {
+	if(!item) return;
 	const {title, priority, description, comments, contributors, attachments} = item;
+
+	const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id,  data: {type: 'item', columnId} });
+
+	const style = {
+		transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
+		transition,
+		opacity: isDragging && active?.type === 'item' ? 0.4 : 1,
+	};
 	return (
-		<div className="max-w-[300px] min-h-[170px] rounded-md border-border p-4 bg-card-light flex  flex-col justify-between">
+		<div
+			ref={setNodeRef}
+			{...attributes}
+			style={style}
+			className="max-w-[300px] min-h-[170px] rounded-md border-border p-4 bg-card-light flex  flex-col justify-between shadow-xl select-none">
 			<div className="flex flex-row justify-between items-center">
 				<Priority status={priority} />
-			 <Ellipsis size={14} />
+				<div {...listeners} className="flex  items-center gap-2">
+					<Ellipsis size={14} />
+					{/* drag handler */}
+					<div className="h-7 w-7 rounded flex items-center justify-center bg-surface-500">
+						<Grip size={18} className="text-muted-card" />
+					</div>
+				</div>
 			</div>
 			{/* content description - title */}
 			<div>
-				<p className="text">{title}</p>
-				<p className="text-muted-card text-sm line-clamp-2 overflow-hidden min-h-[2.5rem]">{description}</p>
+				<p className="select-none">{title}</p>
+				<p className="text-muted-card text-sm line-clamp-2 overflow-hidden min-h-[2.5rem] select-none">{description}</p>
 			</div>
 			{/* Avatar and Comments */}
 			<div className="flex  justify-between">

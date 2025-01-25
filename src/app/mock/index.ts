@@ -33,4 +33,19 @@ export const TASKS = {
 			}
 		]
 	},
+	"task-3": {
+		id: "task-3",
+		title: "Task 3",
+		comments: 2,
+		description: "Description for task 2",
+		priority: 'medium',
+		attachments: 4,
+		contributors: [
+			{
+				id: 202,
+				name: 'Vasilis',
+				image: '/profile-4.jpg'
+			}
+		]
+	},
 }
