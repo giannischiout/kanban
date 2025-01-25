@@ -3,7 +3,7 @@
 import {BreadCrumbs} from "@/app/_components/breadcrumbs";
 import {Button} from "@/components/ui/button";
 import {ArrowUpDown, ListFilter} from "lucide-react";
-import {act, ReactNode, useCallback, useEffect, useState} from "react";
+import {ReactNode, useCallback, useState} from "react";
 import {IKanbanColumn, ITask} from "@/app/types/kanban";
 import {Container} from "@/app/_sections/kanban/components/container";
 import {KanbanCard} from "@/app/_sections/kanban/components/kanban-card";
@@ -226,31 +226,17 @@ export function KanbanView({kanbanId: tab}: Props) {
 							return (
 								<Container key={columnId} column={column} id={columnId}>
 									<SortableContext items={column.taskIds || []} strategy={verticalListSortingStrategy}>
-										{
-											column.taskIds.map((taskId) => {
-												const taskItem = kanban.tasks[taskId];
-												return (
-													<KanbanCard
-															active={active}
-															key={taskId}
-															id={taskId}
-															columnId={columnId}
-															item={taskItem}
-														/>
-												)
-											})
-										}
-										{/*{column.taskIds.map((taskId) => {*/}
-										{/*	return (*/}
-										{/*		<KanbanCard*/}
-										{/*			active={active}*/}
-										{/*			key={taskId}*/}
-										{/*			id={taskId}*/}
-										{/*			columnId={columnId}*/}
-										{/*			item={kanban.tasks[taskId]}*/}
-										{/*		/>*/}
-										{/*	);*/}
-										{/*})}*/}
+										{column.taskIds.map((taskId) => {
+											return (
+												<KanbanCard
+													active={active}
+													key={taskId}
+													id={taskId}
+													columnId={columnId}
+													item={kanban.tasks[taskId]}
+												/>
+											);
+										})}
 									</SortableContext>
 								</Container>
 							)
