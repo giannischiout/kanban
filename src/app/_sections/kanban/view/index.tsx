@@ -1,12 +1,13 @@
 'use client';
-
 import {BreadCrumbs} from "@/app/_components/breadcrumbs";
 import {Button} from "@/components/ui/button";
 import {ArrowUpDown, ListFilter} from "lucide-react";
-import {ReactNode, useCallback, useState} from "react";
+import {ReactNode, use, useCallback, useMemo, useState} from "react";
 import {IKanbanColumn, ITask} from "@/app/types/kanban";
 import {Container} from "@/app/_sections/kanban/components/container";
 import {KanbanCard} from "@/app/_sections/kanban/components/kanban-card";
+import debounce from 'lodash.debounce';
+
 import {
 	closestCenter,
 	DndContext, DragEndEvent, DragOverEvent,
@@ -27,6 +28,7 @@ import {
 
 	restrictToHorizontalAxis,
 } from '@dnd-kit/modifiers';
+import {AddColumnDialog} from "@/app/_sections/kanban/components/kanban-add-new-column";
 
 type Props = {
 	kanbanId: string
@@ -73,10 +75,11 @@ export type ActiveState = {
 
 
 // helper functions:
-const getType = (activeType: string, overType: string) => {
-	if(activeType === 'item' && overType === "item") return 'isItem';
-	if(activeType === 'column' && overType === "column") return 'isColumn';
-}
+const getType = (activeType?: string, overType?: string): string | undefined => {
+	if (activeType === "item" && overType === "item") return "isItem";
+	if (activeType === "column" && overType === "column") return "isColumn";
+	return undefined;
+};
 
 const getModifiers = (type: string | null) => {
 	if (type === 'column') {
@@ -104,10 +107,9 @@ export function KanbanView({kanbanId: tab}: Props) {
 		type: '',
 		columnId: '',
 	})
+	console.log({kanban})
 
 	const sensors = useSensors(useSensor(PointerSensor));
-
-
 	const handleDragStart = useCallback((event: DragStartEvent) => {
 		const {id} = event.active;
 		const type = event?.active?.data?.current?.type;
@@ -115,9 +117,6 @@ export function KanbanView({kanbanId: tab}: Props) {
 
 		setActive(prev => ({...prev, id, type, columnId: columnId ?? ""}))
 	}, [])
-
-
-
 	const handleDragEnd = useCallback((event: DragEndEvent) => {
 		const {active, over} = event;
 		if (!over?.id || active.id === over.id) return;
@@ -158,42 +157,60 @@ export function KanbanView({kanbanId: tab}: Props) {
  		}
 	}, [kanban])
 
-	const handleDragOver = useCallback((event: DragOverEvent) => {
-		const {active, over} = event;
-		//
-		const activeColumnId = active.data?.current?.columnId;
-		const overColumnId = over?.data?.current?.columnId;
-		//
-		const activeType = active.data?.current?.type;
-		if(activeType === 'item' && overColumnId && activeColumnId !== overColumnId) {
-			//
-			let updatedActive = [...kanban.columns[activeColumnId].taskIds]
-			let updatedOver = [...kanban.columns[overColumnId].taskIds]
-			//
-			const overIndex = kanban.columns[overColumnId].taskIds.findIndex((taskId) => taskId === over?.id)
-			updatedOver.splice(overIndex, 0, active.id.toString()); // Insert task at correct position
-			updatedActive = updatedActive.filter(taskId => taskId !== active.id)
-			setKanban((prev) => ({
-				...prev,
-				columns: {
-					...prev.columns,
-					[activeColumnId]: {
-						 ...prev.columns[activeColumnId as keyof KanbanState],
-						taskIds: updatedActive,
+	const handleDragOver = useCallback(
+		debounce((event: DragOverEvent) => {
+			const { active, over } = event;
+			const activeColumnId = active.data?.current?.columnId;
+			const overColumnId = over?.data?.current?.columnId;
+			const activeType = active.data?.current?.type;
+
+			if (activeType === 'item' && overColumnId && activeColumnId !== overColumnId) {
+				const updatedActive = kanban.columns[activeColumnId].taskIds.filter(taskId => taskId !== active.id);
+				const updatedOver = [...kanban.columns[overColumnId].taskIds];
+				const overIndex = updatedOver.findIndex(taskId => taskId === over?.id);
+				if (overIndex === -1) {
+					updatedOver.push(active.id.toString());
+				} else {
+					updatedOver.splice(overIndex, 0, active.id.toString());
+				}
+
+				setKanban((prev) => ({
+					...prev,
+					columns: {
+						...prev.columns,
+						[activeColumnId]: {
+							...prev.columns[activeColumnId],
+							taskIds: updatedActive,
+						},
+						[overColumnId]: {
+							...prev.columns[overColumnId],
+							taskIds: updatedOver,
+						},
 					},
-					[overColumnId]: {
-						...prev.columns[overColumnId as keyof KanbanState],
-						taskIds: updatedOver
+				}));
+			}
+		}, 200),
+		[kanban.columns]
+	);
+	const modifiers = useMemo(() => getModifiers(active?.type), [active?.type]);
+
+
+	const onColumnAdd = useCallback(( color: string, label: string,) => {
+		console.log({label, color})
+		setKanban((prev) => ({
+		    ...prev,
+				columnOrder: [...prev.columnOrder, label],
+			  columns: {
+					...prev.columns,
+					[label]: {
+						color,
+						id: label,
+						title: label,
+						taskIds: []
 					}
 				}
-			}))
-		}
-
-
-	}, [kanban])
-
-
-
+		}))
+	}, [])
 	return (
 		<main
 			style={{height: 'calc(100vh - 50px)'}}
@@ -211,7 +228,7 @@ export function KanbanView({kanbanId: tab}: Props) {
 				</GhostButton>
 			</div>
 			<DndContext
-				modifiers={getModifiers(active?.type)}
+				modifiers={modifiers}
 				sensors={sensors}
 				collisionDetection={closestCenter}
 				onDragEnd={handleDragEnd}
@@ -240,6 +257,7 @@ export function KanbanView({kanbanId: tab}: Props) {
 								</Container>
 							)
 						})}
+						<AddColumnDialog onColumnAdd={onColumnAdd} />
 					</div>
 				</SortableContext>
 				<DragOverlay>
@@ -248,7 +266,7 @@ export function KanbanView({kanbanId: tab}: Props) {
 							<Container column={kanban.columns[active.id]} id={active.id}>
 								{kanban.columns[active.id].taskIds.map((taskId, index) => {
 									return (
-										<KanbanCard columnId={active.id.toString()} id={taskId} key={index} item={kanban.tasks[taskId]}/>
+										<KanbanCard  columnId={active.id.toString()} id={taskId} key={index} item={kanban.tasks[taskId]}/>
 									)
 								})}
 							</Container>
@@ -257,7 +275,7 @@ export function KanbanView({kanbanId: tab}: Props) {
 					}
 					{
 						active.id && active.type === 'item' && (
-							<KanbanCard columnId={active.columnId}  id={active.id.toString()} item={kanban.tasks[active.id]}/>
+							<KanbanCard  columnId={active.columnId}  id={active.id.toString()} item={kanban.tasks[active.id]}/>
 						)
 					}
 				</DragOverlay>

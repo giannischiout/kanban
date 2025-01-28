@@ -39,42 +39,39 @@ export function Navbar({tab}: {tab: string}) {
 	}, [tab])
 
 	return (
-		<nav className="px-4 h-[50px] grid  grid-cols-[1fr_auto] items-center justify-between w-full z-20 bg-surface border-b border-border">
-			{/* First column: Icons */}
-			<div className="flex h-full items-center gap-1">
-				<div className="flex max-w-36	 flex-1 flex-row justify-between gap-2 pr-8">
-					<House size={20}/>
-					<div className="flex  flex-row  gap-2">
-						<ChevronLeft size={20}/>
-						<ChevronRight size={20}/>
-					</div>
-					<CopyPlus size={20}/>
-				</div>
-				{/* Second column: OpenTaskFrame */}
-				<div className=" h-full  flex-1 items-center  hidden tablet:flex ">
-					{state.tabs.map((tab, index) => (
-						<Tab
-							key={tab}
-							title={tab}
-							handleActive={handleActive}
-							handleClearTab={handleClearTab}
-							active={state.active}
-						/>
-					))}
-				</div>
-			</div>
-
+		<nav className="px-4 h-[50px] grid  grid-cols-[1fr_auto] items-center justify-between w-full z-20 bg-card border-b border-surface-500">
+			{/*<div className="flex h-full items-center gap-1">*/}
+			{/*	<div className="flex max-w-36	 flex-1 flex-row justify-between gap-2 pr-8">*/}
+			{/*		<House size={20}/>*/}
+			{/*		<div className="flex  flex-row  gap-2">*/}
+			{/*			<ChevronLeft size={20}/>*/}
+			{/*			<ChevronRight size={20}/>*/}
+			{/*		</div>*/}
+			{/*		<CopyPlus size={20}/>*/}
+			{/*	</div>*/}
+			{/*	/!* Second column: OpenTaskFrame *!/*/}
+			{/*	<div className=" h-full  flex-1 items-center  hidden tablet:flex ">*/}
+			{/*		{state.tabs.map((tab, index) => (*/}
+			{/*			<Tab*/}
+			{/*				key={tab}*/}
+			{/*				title={tab}*/}
+			{/*				handleActive={handleActive}*/}
+			{/*				handleClearTab={handleClearTab}*/}
+			{/*				active={state.active}*/}
+			{/*			/>*/}
+			{/*		))}*/}
+			{/*	</div>*/}
+			{/*</div>*/}
 
 			{/* Third column: Test text */}
-			<div className="h-full flex items-center gap-2">
-				<IconButton size="small">
-					<Bell/>
-				</IconButton>
-				<IconButton size="small">
-					<Settings/>
-				</IconButton>
-				<Profile/>
-			</div>
+			{/*<div className="h-full flex items-center gap-2">*/}
+				{/*<IconButton size="small">*/}
+				{/*	<Bell/>*/}
+				{/*</IconButton>*/}
+				{/*<IconButton size="small">*/}
+				{/*	<Settings/>*/}
+				{/*</IconButton>*/}
+			{/*</div>*/}
 		</nav>
 	);
 }

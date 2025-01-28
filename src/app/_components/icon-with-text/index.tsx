@@ -8,7 +8,7 @@ type IconProps = {
 export function IconWithText({ label, icon }: IconProps) {
 	return (
 		<div className="flex gap-1 items-center">
-			{cloneElement(icon, { size: 14, className: "text-muted" })}
+			{cloneElement(icon, { size: 14, className: "text-muted-foreground" })}
 			<span className="text-sm select-none">{label}</span>
 		</div>
 	);

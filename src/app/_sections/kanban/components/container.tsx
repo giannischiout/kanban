@@ -1,16 +1,13 @@
 import {ReactNode} from "react";
 import {IKanbanColumn} from "@/app/types/kanban";
-import {Grip, Plus} from "lucide-react";
+import {Grip, Move, Plus} from "lucide-react";
 import {
 
 	useSortable,
 } from "@dnd-kit/sortable";
 import {Button} from "@/components/ui/button";
-import {
-
-	UniqueIdentifier,
-
-} from "@dnd-kit/core";
+import {UniqueIdentifier} from "@dnd-kit/core";
+import {GrabButton} from "@/app/_sections/kanban/components/kanban-grab";
 
 
 type ContainerProps = {
@@ -34,33 +31,29 @@ export function Container({children, column, id}: ContainerProps) {
 			ref={setNodeRef}
 			{...attributes}
 			style={style}
-			className="bg-card min-w-[300px] rounded-md shadow-xl h-full overflow-auto"
+			className="bg-card min-w-[320px] w-[320px] rounded-md shadow-xl h-full overflow-auto cursor-default"
 		>
 			<div className="flex p-3 items-center justify-between">
-				<div className="flex flex-row items-center gap-2">
-					<Bullet color={column.color}/>
-					<p className="font-medium ">{column.title}</p>
-					<p className="text-muted">{column.taskIds.length}</p>
+					<div className="flex justify-center items-center gap-2">
+						<Bullet color={column.color}/>
+						<span className="text-center">{column.title}</span>
+						<span className="text-muted-foreground">{column.taskIds.length}</span>
 				</div>
 				<div className="flex gap-2 items-center">
-					<DragHandle listeners={listeners}/>
-					<Plus size={15} />
+					<GrabButton variant="light" listeners={listeners}/>
+					<Button size="icon"  variant="light">
+						<Plus className="text-muted-foreground"/>
+					</Button>
 				</div>
 			</div>
-				<div className="p-2  flex flex-col gap-2">
+				<div className="p-3  flex flex-col gap-3">
 					{children}
 				</div>
 		</div>
 	)
 }
 
-export function DragHandle({listeners}: { listeners: any}) {
-	return (
-		<Button {...listeners} className='p-0 m-0 w-[40px] h--[20px] bg-surface-500 text-muted '>
-			<Grip size={16} />
-		</Button>
-	)
-}
+
 
 export function Bullet({color: backgroundColor}: { color: string }) {
 	return (
