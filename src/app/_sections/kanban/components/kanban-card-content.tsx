@@ -1,6 +1,6 @@
 export function CardContent({title, description}: {title: string, description: string}) {
 	return (
-		<div className="py-2.5 flex flex-col gap-1 ">
+		<div className="py-2.5 px-0.5 flex flex-col gap-0.5 ">
 			<p className="select-none tracking-wide">{title}</p>
 			<p className="
 				text-muted-foreground

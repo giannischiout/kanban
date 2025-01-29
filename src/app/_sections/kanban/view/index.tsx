@@ -107,7 +107,6 @@ export function KanbanView({kanbanId: tab}: Props) {
 		type: '',
 		columnId: '',
 	})
-	console.log({kanban})
 
 	const sensors = useSensors(useSensor(PointerSensor));
 	const handleDragStart = useCallback((event: DragStartEvent) => {

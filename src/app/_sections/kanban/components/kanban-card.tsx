@@ -36,26 +36,22 @@ export function KanbanCard({item, id, active, columnId}: KanbanCardProps) {
 
 	};
 
-	const handleMenu = useCallback(() => {
-		console.log('menu btn')
-	}, [])
+
 	return (
 		<div
-			className="w-full rounded-lg bg-surface-500 border-2 border-surface-300 flex flex-col justify-between shadow-xl  select-none  cursor-default"
+			className="w-full rounded-lg bg-surface-500 border-2 border-surface-300 flex flex-col justify-between shadow-xl  select-none  cursor-grab"
 			ref={setNodeRef}
 			{...attributes}
+			{...listeners}
 			style={{
 				...style,
 			}}
 		>
-			<div className="p-2.5  border-b " style={{borderBottomColor: '#222222'}}>
+			<div className="p-2.5  border-b-2 " style={{borderBottomColor: '#222222'}}>
 				<div className="flex flex-row justify-between items-center">
 					{/* Top bar: drag and drop / menu */}
 					<Priority status={priority}/>
-					<div className=" flex justify-end gap-1 ">
-						<KanbanCardMenu />
-						<GrabButton listeners={listeners} />
-					</div>
+					<KanbanCardMenu />
 				</div>
 				<CardContent title={title} description={description}/>
 			</div>
