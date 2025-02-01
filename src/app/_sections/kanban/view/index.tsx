@@ -2,18 +2,17 @@
 import {BreadCrumbs} from "@/app/_components/breadcrumbs";
 import {Button} from "@/components/ui/button";
 import {ArrowUpDown, ListFilter} from "lucide-react";
-import {ReactNode, use, useCallback, useMemo, useState} from "react";
+import {ReactNode,  useCallback, useMemo, useState} from "react";
 import {IKanbanColumn, ITask} from "@/app/types/kanban";
 import {Container} from "@/app/_sections/kanban/components/container";
 import {KanbanCard} from "@/app/_sections/kanban/components/kanban-card";
-import debounce from 'lodash.debounce';
 
 import {
 	closestCenter,
 	DndContext, DragEndEvent, DragOverEvent,
 	DragOverlay,
 	DragStartEvent,
-	PointerSensor, UniqueIdentifier,
+ UniqueIdentifier,
 	useSensor,
 	useSensors
 } from "@dnd-kit/core";
@@ -23,42 +22,16 @@ import {
 	SortableContext,
 	verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import {TASKS} from "@/app/mock";
-import {
-
-	restrictToHorizontalAxis,
-} from '@dnd-kit/modifiers';
+import {INITIAL_KANBAN_STATE} from "@/app/mock";
+import {restrictToHorizontalAxis} from '@dnd-kit/modifiers';
 import {AddColumnDialog} from "@/app/_sections/kanban/components/kanban-add-new-column";
+import {SmartPointerSensor} from "@/app/_sections/kanban/components/smart-pointer";
 
 type Props = {
 	kanbanId: string
 }
 
 
-const INITIAL_STATE = {
-	columns: {
-		'open': {
-			id: 'open',
-			color: 'yellow',
-			title: 'open',
-			taskIds: ['task-1', 'task-3']
-		},
-		'progress': {
-			id: 'progress',
-			color: 'orange',
-			title: 'progress',
-			taskIds: ['task-2']
-		},
-		'done': {
-			id: 'done',
-			title: 'done',
-			color: 'green',
-			taskIds: []
-		}
-	},
-	tasks: TASKS,
-	columnOrder: ["open", "progress", "done"]
-}
 
 
 export type KanbanState = {
@@ -94,6 +67,9 @@ const findItemIndex = (array: IKanbanColumn['taskIds'], key:UniqueIdentifier) =>
 }
 
 
+import {usePopover} from "@/app/hooks/use-popover";
+import {TaskPopover} from "@/app/_sections/kanban/components/task-popover";
+import {TaskViewSheet} from "@/app/_sections/kanban/task-view/task-view-sheet";
 
 // ======================================================== =========================================
 // ======================================== DND KANBAN VIEW =========================================
@@ -101,14 +77,18 @@ const findItemIndex = (array: IKanbanColumn['taskIds'], key:UniqueIdentifier) =>
 
 
 export function KanbanView({kanbanId: tab}: Props) {
-	const [kanban, setKanban] = useState<KanbanState>(INITIAL_STATE)
+	const [kanban, setKanban] = useState<KanbanState>(INITIAL_KANBAN_STATE)
+	const sheet = usePopover()
 	const [active, setActive] = useState<ActiveState>({
 		id: '',
 		type: '',
 		columnId: '',
 	})
+	const sensors = useSensors(
+		useSensor(SmartPointerSensor),
+	);
 
-	const sensors = useSensors(useSensor(PointerSensor));
+
 	const handleDragStart = useCallback((event: DragStartEvent) => {
 		const {id} = event.active;
 		const type = event?.active?.data?.current?.type;
@@ -118,11 +98,13 @@ export function KanbanView({kanbanId: tab}: Props) {
 	}, [])
 	const handleDragEnd = useCallback((event: DragEndEvent) => {
 		const {active, over} = event;
+		console.log({active, over})
 		if (!over?.id || active.id === over.id) return;
 		//
 		const activeType = active?.data?.current?.type;
 		const overType = over?.data?.current?.type;
 		const actionType = getType(activeType, overType);
+		console.log({actionType})
 
 		if(actionType === 'isColumn') {
 			const oldIndex = kanban.columnOrder.indexOf(active.id as string)
@@ -132,14 +114,18 @@ export function KanbanView({kanbanId: tab}: Props) {
 			setKanban((prev) => ({...prev, columnOrder: newOrder}))
 		}
 		if(actionType === 'isItem') {
+			console.log('here')
 			// get columns:
 			const activeColumn = active?.data.current?.columnId;
 			const activeTasks = kanban.columns[activeColumn].taskIds
 			// get item indexes:
 			const activeIndex = findItemIndex(activeTasks, active?.id)
+			console.log({activeIndex})
 			const overIndex = findItemIndex(activeTasks, over?.id)
+			console.log({overIndex})
 			// use dnd-kit helper function to reorder array:
-			const newArray = arrayMove(activeTasks,  overIndex, activeIndex,);
+			const newArray = arrayMove(activeTasks, activeIndex, overIndex,);
+			console.log({newArray})
 			// update the new state:
 			setKanban((prev) => {
 				return {
@@ -156,14 +142,19 @@ export function KanbanView({kanbanId: tab}: Props) {
  		}
 	}, [kanban])
 
-	const handleDragOver = useCallback(
-		debounce((event: DragOverEvent) => {
+	const handleDragOver = useCallback((event: DragOverEvent) => {
 			const { active, over } = event;
 			const activeColumnId = active.data?.current?.columnId;
 			const overColumnId = over?.data?.current?.columnId;
 			const activeType = active.data?.current?.type;
 
-			if (activeType === 'item' && overColumnId && activeColumnId !== overColumnId) {
+
+			if(!overColumnId) return;
+			if (activeType === 'item' && activeColumnId !== overColumnId) {
+				console.log('drag over item')
+				console.log({activeColumnId})
+				console.log({overColumnId})
+				console.log({activeType})
 				const updatedActive = kanban.columns[activeColumnId].taskIds.filter(taskId => taskId !== active.id);
 				const updatedOver = [...kanban.columns[overColumnId].taskIds];
 				const overIndex = updatedOver.findIndex(taskId => taskId === over?.id);
@@ -188,14 +179,12 @@ export function KanbanView({kanbanId: tab}: Props) {
 					},
 				}));
 			}
-		}, 200),
-		[kanban.columns]
+		}, [kanban.columns]
 	);
 	const modifiers = useMemo(() => getModifiers(active?.type), [active?.type]);
 
 
 	const onColumnAdd = useCallback(( color: string, label: string,) => {
-		console.log({label, color})
 		setKanban((prev) => ({
 		    ...prev,
 				columnOrder: [...prev.columnOrder, label],
@@ -212,7 +201,6 @@ export function KanbanView({kanbanId: tab}: Props) {
 	}, [])
 	return (
 		<main
-			style={{height: 'calc(100vh - 50px)'}}
 			className="w-[95%] mx-auto grid grid-rows-[auto_auto_1fr]"
 		>
 			<BreadCrumbs tab={tab}/>
@@ -235,7 +223,7 @@ export function KanbanView({kanbanId: tab}: Props) {
 				onDragOver={handleDragOver}
 			>
 				<SortableContext items={kanban.columnOrder} strategy={horizontalListSortingStrategy}>
-					<div className="pb-4 pt-1  overflow-hidden flex flex-row gap-2 overflow-x-auto">
+					<div className="pb-4 pt-1  overflow-hidden flex flex-row gap-4 overflow-x-auto">
 						{kanban.columnOrder.map((columnId) => {
 							const column = kanban.columns[columnId]
 							return (
@@ -244,6 +232,7 @@ export function KanbanView({kanbanId: tab}: Props) {
 										{column.taskIds.map((taskId) => {
 											return (
 												<KanbanCard
+													handleOpenSheet={sheet.onOpen}
 													active={active}
 													key={taskId}
 													id={taskId}
@@ -279,7 +268,7 @@ export function KanbanView({kanbanId: tab}: Props) {
 					}
 				</DragOverlay>
 			</DndContext>
-
+			<TaskViewSheet open={sheet.open} onClose={sheet.onClose}/>
 		</main>
 	);
 }

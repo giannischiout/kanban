@@ -1,10 +1,7 @@
 import {ReactNode} from "react";
 import {IKanbanColumn} from "@/app/types/kanban";
-import {Grip, Move, Plus} from "lucide-react";
-import {
-
-	useSortable,
-} from "@dnd-kit/sortable";
+import { Plus} from "lucide-react";
+import {useSortable} from "@dnd-kit/sortable";
 import {Button} from "@/components/ui/button";
 import {UniqueIdentifier} from "@dnd-kit/core";
 import {GrabButton} from "@/app/_sections/kanban/components/kanban-grab";
@@ -31,7 +28,7 @@ export function Container({children, column, id}: ContainerProps) {
 			ref={setNodeRef}
 			{...attributes}
 			style={style}
-			className="bg-card min-w-[320px] w-[320px] rounded-md shadow-xl h-full overflow-auto cursor-default"
+			className="bg-card min-w-[320px] w-[320px] rounded-md shadow-xl h-full  cursor-default"
 		>
 			<div className="flex p-3 items-center justify-between">
 					<div className="flex justify-center items-center gap-2">

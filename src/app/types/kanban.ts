@@ -1,10 +1,4 @@
-
-
-export type IContributor = {
-	id: number;
-	image: string;
-	name: string;
-}
+import {IAssignee} from "@/app/mock/assignees";
 
 
 export type ITask =  {
@@ -14,7 +8,7 @@ export type ITask =  {
 	comments: number;
 	priority: string;
 	attachments?: number;
-	contributors?: IContributor[]
+	contributors?: IAssignee[]
 }
 
 

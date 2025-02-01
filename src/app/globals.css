@@ -9,15 +9,15 @@ body {
 @layer base {
   :root {
     --background: 0 0% 1%;
-    --foreground: 0 0% 98%;
+    --foreground:  40 90% 97%;
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 0 0% 62%;
 
-    --popover: 176 0% 6%;
+    --popover: 176 0% 3.4%;
     --popover-foreground: 0 0% 62%;
 
-    --border: 176 0% 20%;
+    --border: 176 0% 11.2%;
     --input:176 0% 20%;
 
     --card: 176 0% 5%;
@@ -29,8 +29,9 @@ body {
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
 
-    --accent: 176 0% 14%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /*used in popovers and menu items hover*/
+    --accent: 176 0% 10%; /* Lighter gray */
+    --accent-foreground: 0 0% 90%; /* Almost white, slightly faded */
 
     --destructive: 0 100% 50%;
     --destructive-foreground: 210 40% 98%;
@@ -39,11 +40,13 @@ body {
     --radius: 0.5rem;
 
     /* Surface colors */
+    --surface100:  176 0% 16%;
+    --surface200:  176 0% 15%;
     --surface300: 176 0% 12%;
     --surface400: 176 0% 11.5%;
     --surface500: 176 0% 10%;
     --surface600: 176 0% 7.5%;
-    --surface700: 176 0% 6%;
+    --surface700: 176 0% 6.8%;
   }
 
 }

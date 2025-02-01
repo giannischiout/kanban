@@ -1,14 +1,16 @@
+'use client'
+
 import {ITask} from "@/app/types/kanban";
-import { MessageSquare, Paperclip,} from "lucide-react";
+import {Ellipsis, Eye, MessageSquare, Paperclip,} from "lucide-react";
 import {useSortable} from "@dnd-kit/sortable";
 import {ActiveState} from "@/app/_sections/kanban/view";
-import {useCallback} from "react";
 import {Priority} from "@/app/_components/priority";
 import {IconWithText} from "@/app/_components/icon-with-text";
 import {CardContent} from "@/app/_sections/kanban/components/kanban-card-content";
 import {KanbanAvatar} from "@/app/_sections/kanban/components/kanban-avatar";
-import {KanbanCardMenu, } from "@/app/_sections/kanban/components/kanban-card-dropdown-menu";
-import {GrabButton} from "@/app/_sections/kanban/components/kanban-grab";
+
+
+import {Button} from "@/components/ui/button";
 
 type KanbanCardProps = {
 	item: ITask,
@@ -16,9 +18,17 @@ type KanbanCardProps = {
 	active?: ActiveState,
 	columnId: string,
 	isOverlay?: boolean
+	handleOpenSheet?: () => void;
 }
 
-export function KanbanCard({item, id, active, columnId}: KanbanCardProps) {
+export function KanbanCard(
+	{
+		handleOpenSheet = () => {},
+		item,
+		id,
+		active,
+		columnId
+	}: KanbanCardProps) {
 	const {title, priority, description, comments, contributors, attachments} = item;
 
 	const {attributes, listeners, setNodeRef, transform, transition, isDragging} = useSortable({
@@ -36,13 +46,12 @@ export function KanbanCard({item, id, active, columnId}: KanbanCardProps) {
 
 	};
 
-
 	return (
 		<div
 			className="w-full rounded-lg bg-surface-500 border-2 border-surface-300 flex flex-col justify-between shadow-xl  select-none  cursor-grab"
 			ref={setNodeRef}
-			{...attributes}
 			{...listeners}
+			{...attributes}
 			style={{
 				...style,
 			}}
@@ -51,30 +60,36 @@ export function KanbanCard({item, id, active, columnId}: KanbanCardProps) {
 				<div className="flex flex-row justify-between items-center">
 					{/* Top bar: drag and drop / menu */}
 					<Priority status={priority}/>
-					<KanbanCardMenu />
+					<Button
+						onClick={handleOpenSheet}
+						variant="ghost"
+						className="w-6 h-6 "
+					>
+						<Eye size={18} className="text-muted-foreground" />
+					</Button>
 				</div>
 				<CardContent title={title} description={description}/>
 			</div>
 			{/* Bottom: contributors-avatars */}
-			<div className="p-2.5 flex justify-between">
-				<div className="flex">
-					{
-						contributors && contributors.map((avatar, index) => (
-							<div className="flex gap-1 items-center" key={avatar.id} style={{marginLeft: -(index * 5)}}>
-								<KanbanAvatar contributor={avatar.name} image={avatar.image} alt={avatar.name}/>
+			<div className="p-2.5 flex ">
+				<div className="flex  w-full">
+					{contributors && contributors.map((avatar, index) => (
+							<div key={avatar?.id} style={{marginLeft: -(index + 4)}}>
+								<KanbanAvatar
+									contributor={`${avatar?.firstName} ${avatar?.lastName}`}
+									initials={avatar?.initials}
+									color={avatar?.avatarColor}
+								/>
 							</div>
-						))
-					}
+					))}
 				</div>
 				{/* comments and attachments */}
-					<div className="flex gap-3">
-					{attachments && <IconWithText label={attachments || 0} icon={<Paperclip />} />}
-		 			{comments && <IconWithText label={comments} icon={<MessageSquare/>} />}
-		 		</div>
-		 	</div>
+				<div className="flex gap-3">
+					{attachments && <IconWithText label={attachments || 0} icon={<Paperclip/>}/>}
+					{comments && <IconWithText label={comments} icon={<MessageSquare/>}/>}
+				</div>
+			</div>
 		</div>
-
-
 	)
 }
 

@@ -40,9 +40,9 @@ const getColor = (priority: string): { background: string; text: string, border:
 			};
 		case 'low':
 			return  {
-				background: 'rgba(18,183,87,0.38)',
-				border: 'rgba(18,183,87,0.45)',
-				text: '#12b757'
+				background: 'rgba(18,183,87,0.11)',
+				border: 'rgba(18,183,87,0.17)',
+				text: 'rgba(18,183,87,0.62)'
 			};
 		default:
 			return {

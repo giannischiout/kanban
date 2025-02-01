@@ -1,21 +1,25 @@
 import {useCallback, useMemo, useState} from "react";
 
+
 export function usePopover() {
 	const [open, setOpen] = useState(false);
 
-	const onTrue = useCallback(() => {
+	const onOpen = useCallback(() => {
 		setOpen(true)
 	}, [])
-	const onFalse = useCallback(() => {
+	const onClose = useCallback(() => {
 		setOpen(false)
 	}, [])
-	const toggle = useCallback(() => {
-		setOpen((prev) => !prev)
+
+
+	const toggle = useCallback((value: boolean) => {
+		setOpen(!value)
 	}, [])
+
 	return useMemo(() => ({
 		open,
-		onFalse,
-		onTrue,
+		onOpen,
+		onClose,
 		toggle,
-	}), [open, onFalse, onTrue, toggle])
+	}), [open, onOpen, onClose, toggle])
 }

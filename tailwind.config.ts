@@ -40,10 +40,13 @@ module.exports = {
 				},
 				surface: {
 					DEFAULT: "hsl(var(--surface600))",
+					100: "hsl(var(--surface100))",
+					200: "hsl(var(--surface200))",
 					300: "hsl(var(--surface300))",
 					400: "hsl(var(--surface400))",
 					500: "hsl(var(--surface500))",
 					700: "hsl(var(--surface700))",
+					800: "hsl(var(--surface700))",
 				}
 			},
 			borderRadius: {
