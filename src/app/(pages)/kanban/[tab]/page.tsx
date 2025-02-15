@@ -8,11 +8,9 @@ type Props = {
 
 
 
-
 export default async function Page({params}: Props){
-  const {tab}= await params;
   return (
-    <KanbanView kanbanId={tab} />
+    <KanbanView />
   );
 }
 

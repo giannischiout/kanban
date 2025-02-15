@@ -13,8 +13,6 @@ export class SmartPointerSensor extends PointerSensor {
 				return !(!event.isPrimary ||
 					event.button !== 0 ||
 					isInteractiveElement(event.target as Element));
-
-
 			},
 		},
 	];
@@ -28,12 +26,8 @@ function isInteractiveElement(element: Element | null) {
 		"select",
 		"option",
 	];
-	if (
-		element?.tagName &&
-		interactiveElements.includes(element.tagName.toLowerCase())
-	) {
-		return true;
-	}
+	return !!(element?.tagName &&
+		interactiveElements.includes(element.tagName.toLowerCase()));
 
-	return false;
+
 }

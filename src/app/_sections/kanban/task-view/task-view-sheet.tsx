@@ -1,33 +1,44 @@
-'use client'
-import {  X} from "lucide-react";
-import {Sheet, SheetContent, SheetTitle, } from "@/components/ui/sheet";
+import {Check, Ellipsis, LayoutList, Lock, Maximize2, Paperclip, ThumbsUp, X} from "lucide-react";
+import {Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle,} from "@/components/ui/sheet";
 import * as SheetPrimitive from "@radix-ui/react-dialog"
-import {Assignees} from "@/app/_components/assignees";
+import {TaskViewForm} from "@/app/_sections/kanban/task-view/task-view-form";
+import {Button} from "@/app/_components/buttons";
+import {Separator} from "@/components/ui/separator";
+import {VisuallyHidden} from "@radix-ui/react-visually-hidden";
+import {useGetTask} from "@/app/_actions/tasks";
+import {Label} from "@/components/ui/label";
+import {Input} from "@/components/ui/input";
+import {TaskSheetNav} from "@/app/_sections/kanban/task-view/task-sheet-nav";
+import {TaskVisibility} from "@/app/_sections/kanban/task-view/task-sheet-visibility";
 
 
 type Props = {
 	open: boolean;
 	onClose: () => void;
+	taskId: string;
 }
 
-export function TaskViewSheet({ open, onClose}: Props) {
+export function TaskViewSheet({taskId, open, onClose}: Props) {
+	console.log({taskId})
+	const {task} = useGetTask(taskId)
+	console.log({task})
 	return (
-		<Sheet open={open} onOpenChange={onClose}>
-			<SheetContent className="lg:min-w-[500px] sm:min-w-[200px] ">
-				<div className="p-4 flex justify-between border-b border-surface-400">
-					<SheetTitle>test</SheetTitle>
-					<SheetPrimitive.Close
-						className=" rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none disabled:pointer-events-none data-[state=open]:bg-secondary">
-						<X className="h-4 w-4"/>
-					</SheetPrimitive.Close>
-				</div>
-				{/* sheet form */}
-				<section className="p-4 w-full">
-					<div className="w-full  ">
-						<Assignees />
-					</div>
-				</section>
+		<Sheet  open={open} onOpenChange={onClose}>
+			<SheetContent side='right' className="lg:min-w-[700px] sm:min-w-[200px]">
+				<SheetHeader>
+						<SheetTitle>test</SheetTitle>
+				</SheetHeader>
+				{/*<div>*/}
+				{/*	<TaskSheetNav onClose={onClose}/>*/}
+				{/*	<TaskVisibility/>*/}
+				{/*	<section className="p-4 w-full">*/}
+				{/*		<TaskViewForm />*/}
+				{/*	</section>*/}
+				{/*</div>*/}
 			</SheetContent>
 		</Sheet>
 	)
 }
+
+
+

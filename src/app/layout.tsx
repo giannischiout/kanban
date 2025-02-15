@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import {Roboto_Mono, Inter } from "next/font/google";
 import "./globals.css";
+import {TooltipProvider} from "@/components/ui/tooltip";
 
 
 
@@ -31,9 +32,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={` ${interFont.variable} ${robotoMono.variable} font-inter antialiased`}
-      >
+        className={`${interFont.variable} ${robotoMono.variable} font-inter antialiased`}>
+      <TooltipProvider>
         {children}
+      </TooltipProvider>
       </body>
     </html>
   );

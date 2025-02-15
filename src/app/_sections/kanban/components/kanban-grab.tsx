@@ -1,4 +1,3 @@
-'use client'
 import {Move} from "lucide-react";
 import { DraggableSyntheticListeners} from "@dnd-kit/core";
 import {Button, buttonVariants} from "@/components/ui/button";

@@ -1,6 +1,7 @@
 import {mock_assignees} from "@/app/mock/assignees";
+import {Task} from "@/app/types/kanban";
 
-export const TASKS = {
+export const TASKS: Record<string, Task> = {
 	"task-1": {
 		id: "task-1",
 		title: "Design Homepage Layout",
@@ -57,6 +58,7 @@ export const TASKS = {
 			{ ...mock_assignees.Liam,  text: "Don't forget to make the CTA buttons prominent."  },
 		],
 		attachments: [],
+		contributors: [mock_assignees.Isabella, mock_assignees.Liam, mock_assignees.Noah]
 	},
 	"task-4": {
 		id: "task-4",
@@ -132,14 +134,10 @@ export const TASKS = {
 
 
 
-
-export const useGetTasks = () => {
-	return TASKS;
-}
-
-
 export const useGetTask = (taskId: string) => {
-	 return TASKS[taskId]
+	return {
+		task: TASKS[taskId]
+	}
 }
 
 

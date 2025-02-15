@@ -1,5 +1,5 @@
 import {ReactNode} from "react";
-import {IKanbanColumn} from "@/app/types/kanban";
+import {Column} from "@/app/types/kanban";
 import { Plus} from "lucide-react";
 import {useSortable} from "@dnd-kit/sortable";
 import {Button} from "@/components/ui/button";
@@ -9,7 +9,7 @@ import {GrabButton} from "@/app/_sections/kanban/components/kanban-grab";
 
 type ContainerProps = {
 	children: ReactNode;
-	column: IKanbanColumn;
+	column:  Column;
 	id: UniqueIdentifier;
 }
 export function Container({children, column, id}: ContainerProps) {
@@ -26,9 +26,10 @@ export function Container({children, column, id}: ContainerProps) {
 	return (
 		<div
 			ref={setNodeRef}
+			{...listeners}
 			{...attributes}
 			style={style}
-			className="bg-card min-w-[320px] w-[320px] rounded-md shadow-xl h-full  cursor-default"
+			className="cursor-grab bg-surface  flex-1 min-w-[320px] max-w-[360px] rounded-md shadow-xl h-full"
 		>
 			<div className="flex p-3 items-center justify-between">
 					<div className="flex justify-center items-center gap-2">
@@ -37,8 +38,7 @@ export function Container({children, column, id}: ContainerProps) {
 						<span className="text-muted-foreground">{column.taskIds.length}</span>
 				</div>
 				<div className="flex gap-2 items-center">
-					<GrabButton variant="light" listeners={listeners}/>
-					<Button size="icon"  variant="light">
+					<Button  size="icon"  variant="light">
 						<Plus className="text-muted-foreground"/>
 					</Button>
 				</div>

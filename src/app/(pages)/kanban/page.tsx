@@ -1,14 +1,10 @@
-'use client'
-import {useRouter} from "next/navigation";
-import {useEffect} from "react";
+
+import {KanbanView} from "@/app/_sections/kanban/view";
 
 
 
 export default  function Page(){
 
-  const router = useRouter();
-  useEffect(() => {
-    router.push('kanban/tasks');
-  }, [router]);
-  return null
+  return   <KanbanView  />
+
 }

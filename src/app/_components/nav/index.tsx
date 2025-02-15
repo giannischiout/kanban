@@ -1,7 +1,7 @@
 'use client';
 import {Bell,  ChevronDown, ChevronLeft, ChevronRight, CopyPlus, House, Settings, X} from "lucide-react";
 import { useCallback, useState} from "react";
-import {IconButton} from "@/app/_components/icon-button";
+import {IconButton} from "../buttons/icon-button";
 import Image from "next/image";
 import {Tab} from "@/app/_components/Tab";
 import {useRouter} from "next/navigation";

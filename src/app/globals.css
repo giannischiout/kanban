@@ -8,13 +8,14 @@ body {
 
 @layer base {
   :root {
-    --background: 0 0% 1%;
-    --foreground:  40 90% 97%;
+    --background: 0 0% 0%;
+    --background-light: 0 0% 5%;
+    --foreground: 0 0% 100%;
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 0 0% 62%;
 
-    --popover: 176 0% 3.4%;
+    --popover: 176 1% 15%;
     --popover-foreground: 0 0% 62%;
 
     --border: 176 0% 11.2%;
@@ -45,8 +46,11 @@ body {
     --surface300: 176 0% 12%;
     --surface400: 176 0% 11.5%;
     --surface500: 176 0% 10%;
-    --surface600: 176 0% 7.5%;
-    --surface700: 176 0% 6.8%;
+    --surface600: 0 0% 6%;
+    --surface: 0 0% 6%;
+    --surface700: 0 0 3%;
+    --surface800:  0 0% 2%;
+
   }
 
 }

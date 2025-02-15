@@ -1,19 +1,16 @@
-'use client'
-
-import {ITask} from "@/app/types/kanban";
-import {Ellipsis, Eye, MessageSquare, Paperclip,} from "lucide-react";
+import { Eye, MessageSquare, Paperclip,} from "lucide-react";
 import {useSortable} from "@dnd-kit/sortable";
-import {ActiveState} from "@/app/_sections/kanban/view";
 import {Priority} from "@/app/_components/priority";
-import {IconWithText} from "@/app/_components/icon-with-text";
+import {IconWithText} from "@/app/_components/buttons/icon-with-text";
 import {CardContent} from "@/app/_sections/kanban/components/kanban-card-content";
 import {KanbanAvatar} from "@/app/_sections/kanban/components/kanban-avatar";
 
 
 import {Button} from "@/components/ui/button";
+import {ActiveState, Task} from "@/app/types/kanban";
 
 type KanbanCardProps = {
-	item: ITask,
+	item: Task,
 	id: string,
 	active?: ActiveState,
 	columnId: string,
@@ -30,7 +27,7 @@ export function KanbanCard(
 		columnId
 	}: KanbanCardProps) {
 	const {title, priority, description, comments, contributors, attachments} = item;
-
+	console.log({contributors})
 	const {attributes, listeners, setNodeRef, transform, transition, isDragging} = useSortable({
 		id,
 		data: {type: 'item', columnId}
@@ -48,7 +45,7 @@ export function KanbanCard(
 
 	return (
 		<div
-			className="w-full rounded-lg bg-surface-500 border-2 border-surface-300 flex flex-col justify-between shadow-xl  select-none  cursor-grab"
+			className="w-full rounded-lg bg-popover border-2 border-surface-300 flex flex-col justify-between shadow-xl  select-none  cursor-grab"
 			ref={setNodeRef}
 			{...listeners}
 			{...attributes}
@@ -74,7 +71,10 @@ export function KanbanCard(
 			<div className="p-2.5 flex ">
 				<div className="flex  w-full">
 					{contributors && contributors.map((avatar, index) => (
-							<div key={avatar?.id} style={{marginLeft: -(index + 4)}}>
+							<div
+								key={`${avatar?.firstName} ${avatar?.lastName}`}
+								style={{marginLeft: -(index + 4)}}
+							>
 								<KanbanAvatar
 									contributor={`${avatar?.firstName} ${avatar?.lastName}`}
 									initials={avatar?.initials}
@@ -83,10 +83,10 @@ export function KanbanCard(
 							</div>
 					))}
 				</div>
-				{/* comments and attachments */}
+				 {/*comments and attachments*/}
 				<div className="flex gap-3">
-					{attachments && <IconWithText label={attachments || 0} icon={<Paperclip/>}/>}
-					{comments && <IconWithText label={comments} icon={<MessageSquare/>}/>}
+					{attachments && <IconWithText label={attachments.length || 0} icon={<Paperclip/>}/>}
+					{comments && <IconWithText label={comments.length} icon={<MessageSquare/>}/>}
 				</div>
 			</div>
 		</div>
