@@ -58,10 +58,7 @@ module.exports = {
     'jsx-a11y/control-has-associated-label': 0,
     // unused imports
     'unused-imports/no-unused-imports': 1,
-    'unused-imports/no-unused-vars': [
-      0,
-      { vars: 'all', varsIgnorePattern: '^_', args: 'after-used', argsIgnorePattern: '^_' },
-    ],
+    'unused-imports/no-unused-vars': [0, { vars: 'all', varsIgnorePattern: '^_', args: 'after-used', argsIgnorePattern: '^_' }],
     // perfectionist
     'perfectionist/sort-exports': [1, { order: 'asc', type: 'line-length' }],
     'perfectionist/sort-named-imports': [1, { order: 'asc', type: 'line-length' }],
@@ -106,4 +103,4 @@ module.exports = {
       },
     ],
   },
-};
+}
