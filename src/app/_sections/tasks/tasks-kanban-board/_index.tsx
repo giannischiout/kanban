@@ -18,17 +18,15 @@ import { SmartPointerSensor } from '@/app/_sections/tasks/tasks-kanban-board/sma
 import { arrayMove, horizontalListSortingStrategy, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { Container } from '@/app/_sections/tasks/tasks-kanban-board/container'
 import { KanbanCard } from '@/app/_sections/tasks/tasks-kanban-board/kanban-card'
-import { AddColumnDialog } from '@/app/_sections/tasks/tasks-kanban-board/kanban-add-new-column'
 import { Button } from '@/components/ui/button'
 import { restrictToHorizontalAxis } from '@dnd-kit/modifiers'
 import { INITIAL_KANBAN_STATE } from '@/app/_actions/tasks'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 
 export function KanbanBoard() {
   const [kanban, setKanban] = useState<KanbanState>(INITIAL_KANBAN_STATE)
   const sheet = usePopover()
   const router = useRouter()
-  console.log({ router })
   const [active, setActive] = useState<ActiveState>({
     id: '',
     type: '',
@@ -146,7 +144,7 @@ export function KanbanBoard() {
     }))
   }, [])
   return (
-    <main>
+    <section className="h-full">
       <DndContext
         id="dnd-kanban"
         modifiers={modifiers}
@@ -157,7 +155,7 @@ export function KanbanBoard() {
         onDragOver={handleDragOver}
       >
         <SortableContext items={kanban.columnOrder} strategy={horizontalListSortingStrategy}>
-          <div className="flex flex-row gap-4 overflow-hidden overflow-x-auto pb-4 pt-1">
+          <div className="flex min-h-full flex-row gap-4 overflow-hidden overflow-x-auto">
             {kanban.columnOrder.map((columnId) => {
               const column = kanban.columns[columnId]
               return (
@@ -177,7 +175,7 @@ export function KanbanBoard() {
                 </Container>
               )
             })}
-            <AddColumnDialog onColumnAdd={onColumnAdd} />
+            {/*<AddColumnDialog onColumnAdd={onColumnAdd} />*/}
           </div>
         </SortableContext>
         <DragOverlay>
@@ -194,7 +192,7 @@ export function KanbanBoard() {
         </DragOverlay>
       </DndContext>
       {/*<TaskViewSheet taskId={viewTaskId} open={sheet.open} onClose={sheet.onClose}/>*/}
-    </main>
+    </section>
   )
 }
 

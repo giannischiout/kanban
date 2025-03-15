@@ -12,12 +12,15 @@
     --popover-foreground: 20 14.3% 4.1%;
     --primary: 248 52.5% 27.3%;
     --primary-foreground: 60 9.1% 97.8%;
-    --secondary: 60 4.8% 95.9%;
+    /*--secondary: 60 4.8% 95.9%;*/
+    --secondary: 0, 100%, 67%;
     --secondary-foreground: 24 9.8% 10%;
-    --muted: 24.8% 95.9%;
-    --muted-light: 139 0% 5%;
+    --muted: 220, 13%, 27%;
+    --muted-light: 220, 13%, 40%;
     --muted-foreground: 25 5.3% 44.7%;
-    --accent: 280 70% 55%;
+    /*--accent: 280 70% 55%;*/
+    --primary-gradient: 280 70% 55%;
+    --accent: 0 0% 96%;
     --accent-foreground: 24 9.8% 10%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 60 9.1% 97.8%;
@@ -99,4 +102,15 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background-color: #555;
+}
+
+/*---break---*/
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }

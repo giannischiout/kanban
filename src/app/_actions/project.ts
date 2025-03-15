@@ -3,28 +3,30 @@ import axios from 'axios'
 import { Project } from '@/app/types/project'
 import { cache } from 'react'
 
-const fetchProjects = async (): Promise<ApiData> => {
+const fetchProjectById = async (slug: string | null): Promise<ApiData> => {
   try {
-    const { data } = await axios.get('/api/project')
+    const { data } = await axios.get(`/api/project/${slug}`)
     return data
   } catch (error) {
-    throw new Error('Error fetching projects')
+    throw new Error('Error fetching project')
   }
 }
 
 export type ApiData = {
-  result: Project[]
+  result: Project
   success: boolean
   message: string
 }
-export const useGetProjects = () => {
+
+export const useGetProject = (slug: string | null) => {
   const { data, error, isLoading, isError, isSuccess } = useQuery<ApiData, Error>({
-    queryKey: ['projects'],
-    queryFn: fetchProjects,
+    queryKey: ['project', slug],
+    queryFn: () => fetchProjectById(slug),
+    enabled: !!slug,
   })
 
   return {
-    projects: data?.result || [],
+    project: data?.result || null,
     error,
     isLoading,
     isError,
@@ -32,14 +34,20 @@ export const useGetProjects = () => {
   }
 }
 
+export type GetProjects = {
+  success: boolean
+  result: Project[]
+  message: string
+}
+
 const ENDPOINT = `${process.env.NEXT_PUBLIC_API_URL}/project`
-export const getProjects = cache(async () => {
+export const getProjects = cache(async (): Promise<GetProjects> => {
   try {
     const { data } = await axios.get(ENDPOINT)
     return {
       success: true,
       result: data.result,
-      message: 'Successfully retrieved projects',
+      message: data.message,
     }
   } catch (error) {
     console.error('Error fetching projects:', error)

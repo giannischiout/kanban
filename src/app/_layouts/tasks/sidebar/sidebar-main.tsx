@@ -61,7 +61,7 @@ export function SidebarMain({ user, projects }: SidebarProps) {
         </div>
       </div>
       <div className="flex flex-col gap-2 border-t border-border p-4">
-        <Button className="flex items-center gap-2 rounded-md bg-gradient-to-r from-primary to-accent px-4 py-2 text-white hover:opacity-90">
+        <Button className="to-primary-gradient flex items-center gap-2 rounded-md bg-gradient-to-r from-primary px-4 py-2 text-white hover:opacity-90">
           <Zap className="h-5 w-5" />
           Upgrade
         </Button>
@@ -76,7 +76,7 @@ export function SidebarMain({ user, projects }: SidebarProps) {
 
 export const MenuItem = ({ children }: { children: ReactNode }) => {
   return (
-    <a className="transform-background-color flex h-8 cursor-pointer items-center gap-2.5 rounded-lg border border-transparent px-2 py-1 text-sm ease-in-out hover:bg-secondary">
+    <a className="transform-background-color flex h-8 cursor-pointer items-center gap-2.5 rounded-lg border border-transparent px-2 py-1 text-sm ease-in-out hover:bg-accent">
       {children}
     </a>
   )

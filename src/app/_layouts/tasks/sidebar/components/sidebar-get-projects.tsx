@@ -1,36 +1,27 @@
-import { useState } from 'react'
 import { cn } from '@/lib/utils'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { Project } from '@/app/types/project'
 
 type GetProjectsProps = {
   projects: Project[]
-  isLoading: boolean
-  error?: string
 }
 export function GetProjects({ projects }: GetProjectsProps) {
-  const [activeProject, setActiveProject] = useState(projects[0]?._id)
   const router = useRouter()
-  // if (isLoading)
-  //   return (
-  //     <div className="mt-2 flex flex-col gap-1.5 p-3">
-  //       {Array.from({ length: 4 }).map((_, index) => (
-  //         <Skeleton key={index} className="w-full p-3.5" />
-  //       ))}
-  //     </div>
-  //   )
+  const pathname = usePathname()
 
-  const handleProjectClick = (slug) => {
+  const activeSlug = pathname.split('/')[2]
+
+  const handleProjectClick = (slug: string) => {
     router.push(`/projects/${slug}/kanban`)
   }
   return (
     <div className="flex flex-col gap-1">
       {projects?.map((project) => (
         <div
-          onClick={() => setActiveProject(project?._id)}
+          onClick={() => handleProjectClick(project?.slug)}
           className={cn(
-            'flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors duration-200 ease-in-out hover:bg-secondary',
-            activeProject === project?._id ? 'bg-primary/5 font-medium text-primary' : 'bg-transparent'
+            'flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors duration-200 ease-in-out hover:bg-accent',
+            activeSlug === project?.slug ? 'bg-primary/5 font-medium text-primary' : 'bg-transparent'
           )}
           key={project._id}
         >

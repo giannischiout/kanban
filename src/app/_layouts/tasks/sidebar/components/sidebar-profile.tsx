@@ -12,16 +12,16 @@ export function UserProfile({ user }: { user: Employee | null }) {
   }
 
   return (
-    <div className="flex h-12 items-center justify-between border-b border-border px-3">
+    <div className="flex h-12 items-center justify-between border-b border-border px-2">
       {/* User Profile */}
-      <div className="flex cursor-pointer items-center gap-1 rounded-md ring-secondary transition-all duration-300 ease-in-out hover:bg-secondary hover:ring-2">
+      <div className="flex cursor-pointer items-center gap-1.5 rounded-md px-1 py-1 transition-all duration-300 ease-in-out hover:bg-accent">
         <span
-          className="flex h-6 w-6 items-center justify-center rounded text-sm text-white"
+          className="flex h-[22px] w-[22px] items-center justify-center rounded text-xs text-white"
           style={{ backgroundColor: user.avatarColor || '#999' }}
         >
           {user.firstName?.charAt(0)?.toUpperCase() || 'U'}
         </span>
-        <span className="max-w-28 truncate text-sm font-medium">
+        <span className="max-w-28 truncate text-sm font-medium text-gray-800">
           {user.firstName} {user.lastName}
         </span>
         <ChevronDown size={16} className="text-muted-foreground" />

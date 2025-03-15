@@ -8,7 +8,7 @@ module.exports = {
         sans: ['var(--font-inter)'],
       },
       fontSize: {
-        sm: '0.86rem', // Slightly bigger than the default 0.875rem (~14px → ~15.2px)
+        sm: '0.82rem', // Slightly bigger than the default 0.875rem (~14px → ~15.2px)
         base: '1rem', // 16px (default)
         md: '1.0625rem', // 17px
         lg: '1.125rem', // 18px (adjust as needed)
@@ -20,6 +20,7 @@ module.exports = {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         primary: {
+          gradient: 'hsl(var(--primary-gradient))',
           DEFAULT: 'hsl(var(--primary))',
           foreground: 'hsl(var(--primary-foreground))',
         },

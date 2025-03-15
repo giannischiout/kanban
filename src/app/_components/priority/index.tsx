@@ -9,14 +9,14 @@ export function Priority({ status }: PriorityProps) {
   const statusCap = `${status.charAt(0).toUpperCase()}${status.slice(1)}`
   return (
     <div
-      className="size flex flex-row items-center gap-0.5 rounded px-1.5 py-1"
+      className="size py-0.2 flex flex-row items-center gap-0.5 rounded px-1"
       style={{
         backgroundColor: background,
         border: `1px solid ${border}`,
       }}
     >
-      <Flag style={{ color: text }} size={11} strokeWidth={4} />
-      <span className="text-[0.72rem] tracking-wider" style={{ color: text }}>
+      <Flag style={{ color: text }} size={9} strokeWidth={4} />
+      <span className="text-[0.69rem] tracking-wider" style={{ color: text }}>
         {statusCap}
       </span>
     </div>
@@ -35,7 +35,7 @@ const getColor = (priority: string): { background: string; text: string; border:
       return {
         background: 'rgba(241,141,14,0.05)',
         border: 'rgba(246,154,39,0.1)',
-        text: 'rgba(241,141,14,0.56)',
+        text: 'rgba(185,107,7,0.56)',
       }
     case 'low':
       return {

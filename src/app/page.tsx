@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
 
 export default async function Home() {
-  redirect('/projects/ai-chatbot/kanban')
+  redirect('/projects/ai-chatbot/board')
 }

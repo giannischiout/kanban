@@ -9,7 +9,6 @@ type LayoutProps = {
 
 export default async function Layout({ children }: LayoutProps) {
   const data = await getProjects()
-
   return (
     <SidebarProvider>
       <TasksLayout projects={data?.result}>{children}</TasksLayout>

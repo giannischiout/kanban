@@ -1,4 +1,31 @@
-import { Schema, model, models } from 'mongoose'
+import { model, models, Schema, Types } from 'mongoose'
+
+export interface ITask extends Document {
+  title: string
+  description: string
+  priority: 'low' | 'medium' | 'high'
+  startDate: string
+  dueDate: string
+  projectId: Types.ObjectId
+  columnId: Types.ObjectId
+  order: number
+  assignedTo: Types.ObjectId
+  collaborators: Types.ObjectId[]
+  attachments: {
+    filename: string
+    url: string
+    uploadedAt: Date
+  }[]
+  comments: {
+    userId: Types.ObjectId
+    text: string
+    createdAt: Date
+  }[]
+  subtasks: Types.ObjectId[]
+  tags: string[]
+  createdAt: Date
+  updatedAt: Date
+}
 
 const TaskSchema = new Schema(
   {
@@ -7,7 +34,12 @@ const TaskSchema = new Schema(
     priority: { type: String, enum: ['low', 'medium', 'high'], default: 'medium' },
     startData: { type: String },
     dueDate: { type: String },
-    projectId: { type: Schema.Types.ObjectId, ref: 'Project', required: true }, // Reference to Project
+    projectId: { type: Schema.Types.ObjectId, ref: 'Project', required: true },
+    columnId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Column',
+      required: true,
+    },
     assignedTo: { type: Schema.Types.ObjectId, ref: 'Employee', required: true }, // Single user assigned
     collaborators: [{ type: Schema.Types.ObjectId, ref: 'Employee' }], // Multiple collaborators
     attachments: [
@@ -26,8 +58,11 @@ const TaskSchema = new Schema(
     ],
     subtasks: [{ type: Schema.Types.ObjectId, ref: 'Subtask' }],
     column: String,
+    tags: [{ type: String }],
   },
   { timestamps: true }
 )
 
-export const Task = models.Task || model('Task', TaskSchema)
+TaskSchema.index({ columnId: 1, order: 1 }, { unique: true })
+
+export const Task = models.Task || model<ITask>('Task', TaskSchema)

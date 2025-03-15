@@ -3,7 +3,7 @@ import { useSidebar } from '@/app/_context/sidebar-context'
 import { MenuItem } from '@/app/_layouts/tasks/sidebar/sidebar-main'
 import { Employee } from '@/app/types/employee'
 
-export function SidebarSmall({ user }: { user: Employee }) {
+export function SidebarSmall({ user }: { user: Employee | null }) {
   const { isSidebarOpen } = useSidebar()
   if (isSidebarOpen) return null
   return (

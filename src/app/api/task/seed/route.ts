@@ -145,12 +145,14 @@ export async function POST() {
 
   const projects = await Project.find().limit(3)
   const employees = await Employee.find()
-  console.log({ employees })
   // assign a project to the tasks:
   const firstProjectTasks = tasks.slice(0, Math.floor(tasks.length * 0.6))
   const secondProjectTasks = tasks.slice(Math.floor(tasks.length * 0.6))
 
-  const assignIdsToTasks = [...firstProjectTasks.map((task) => ({ ...task, projectId: projects[0]._id })), ...secondProjectTasks.map((task) => ({ ...task, projectId: projects[1]._id }))]
+  const assignIdsToTasks = [
+    ...firstProjectTasks.map((task) => ({ ...task, projectId: projects[0]._id })),
+    ...secondProjectTasks.map((task) => ({ ...task, projectId: projects[1]._id })),
+  ]
   //assign employees to the tasks:
   const assignees = await Employee.find()
   console.log({ assignees })
@@ -175,7 +177,7 @@ export async function POST() {
       await Project.updateOne(
         { _id: task.projectId }, // Filter by projectId
         {
-          $push: { taskIds: task._id }, // Add task to the project's taskIds array
+          $push: { taskIds: task._id },
         }
       )
       // Insert subtasks and extract individual _ids

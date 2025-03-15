@@ -128,7 +128,7 @@ export const INITIAL_KANBAN_STATE = {
   columns: {
     open: {
       id: 'open',
-      color: 'yellow',
+      color: '#fb6b1a',
       title: 'open',
       taskIds: ['task-1', 'task-2', 'task-3', 'task-4'],
     },
