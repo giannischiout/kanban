@@ -16,7 +16,6 @@ export function SecondaryNav() {
   const pathname = usePathname()
   const slug = pathname.split('/')[2]
   const { project } = useGetProject(slug)
-  console.log({ project })
   return (
     <div className="flex h-12 w-full items-center border-b border-border px-2">
       <div className="flex flex-1 items-center justify-between">
@@ -52,10 +51,13 @@ export function ProjectPopover({ project }: { project: Project | null }) {
   const handleClick = () => {
     onTrue()
   }
-  const handleMouseLeave = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (popoverRef.current && !popoverRef.current.contains(event.relatedTarget as Node)) {
+  const handleMouseLeave = () => {
+    setTimeout(() => {
       onFalse()
-    }
+    }, 200)
+    // if (popoverRef.current && !popoverRef.current.contains(event.relatedTarget as Node)) {
+    //   onFalse()
+    // }
   }
 
   const handleMouseEnter = () => {
