@@ -33,4 +33,3 @@ export const PROJECTS = [
   },
 ]
 
-console.log(projects)

@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { Project } from '@/app/types/project'
 import { cache } from 'react'
 
@@ -50,7 +50,11 @@ export const getProjects = cache(async (): Promise<GetProjects> => {
       message: data.message,
     }
   } catch (error) {
-    console.error('Error fetching projects:', error)
-    return error
+    const axiosError = error as AxiosError<{ message: string }>
+    return {
+      success: false,
+      result: [],
+      message: axiosError.response?.data?.message || 'Failed to fetch projects',
+    }
   }
 })

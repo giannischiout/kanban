@@ -58,3 +58,45 @@ export type ActiveState = {
   type: 'column' | 'item' | ''
   columnId: string
 }
+
+
+// new Types
+export type ITask = {
+  _id: string;
+  title: string;
+  description: string;
+  priority: 'low' | 'medium' | 'high';
+  startDate: string;
+  dueDate: string;
+  projectId: string;
+  columnId: string;
+  order: number;
+  assignedTo: string;
+  collaborators: string[];
+  attachments: { filename: string; url: string; uploadedAt: Date }[];
+  comments: { userId: string; text: string; createdAt: Date }[];
+  subtasks: string[];
+  tags: string[];
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type IColumn = {
+  _id: string;
+  name: string;
+  color: string;
+  taskIds: string[];
+  tasks?: ITask[];
+};
+
+export type IProject = {
+  _id: string;
+  name: string;
+  description: string;
+  createdAt: string;
+  startDate: Date;
+  endDate: Date;
+  color: string;
+  slug: string;
+  columns: IColumn[];
+};

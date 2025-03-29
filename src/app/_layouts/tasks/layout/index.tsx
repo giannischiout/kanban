@@ -15,11 +15,31 @@ type LayoutProps = {
 }
 
 const userId = process.env.NEXT_PUBLIC_USER
+//
+// export const getProjects = cache(async (slug: string): Promise<GetProjects> => {
+//   try {
+//     const { data } = await axios.get(`${ENDPOINT}/${slug}`)
+//     return {
+//       success: true,
+//       result: data.result,
+//       message: data.message,
+//     }
+//   } catch (error) {
+//     const axiosError = error as AxiosError<{ message: string }>
+//     return {
+//       success: false,
+//       result: [],
+//       message: axiosError.response?.data?.message || 'Failed to fetch projects',
+//     }
+//   }
+// })
 
 export default function TasksLayout({ children, projects }: LayoutProps) {
   const { isSidebarOpen } = useSidebar()
   const { user } = useGetUser(userId)
-  console.log({ user })
+  // const pathname = usePathname()
+  // const slug = pathname.split('/')[2]
+
   return (
     <div>
       <MainNav />

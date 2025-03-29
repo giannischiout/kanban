@@ -19,7 +19,7 @@ export function useBoolean(initialValue = false) {
   )
 
   const onToggle = useCallback(() => {
-    setValue((prev) => prev)
+    setValue((prev) => !prev)
   }, [setValue])
 
   return useMemo(

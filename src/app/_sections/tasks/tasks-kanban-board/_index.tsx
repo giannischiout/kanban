@@ -8,7 +8,6 @@ import {
   DndContext,
   DragEndEvent,
   DragOverEvent,
-  DragOverlay,
   DragStartEvent,
   UniqueIdentifier,
   useSensor,
@@ -17,16 +16,20 @@ import {
 import { SmartPointerSensor } from '@/app/_sections/tasks/tasks-kanban-board/smart-pointer'
 import { arrayMove, horizontalListSortingStrategy, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { Container } from '@/app/_sections/tasks/tasks-kanban-board/container'
-import { KanbanCard } from '@/app/_sections/tasks/tasks-kanban-board/kanban-card'
 import { Button } from '@/components/ui/button'
 import { restrictToHorizontalAxis } from '@dnd-kit/modifiers'
-import { INITIAL_KANBAN_STATE } from '@/app/_actions/tasks'
-import { useRouter } from 'next/navigation'
+import { INITIAL_KANBAN_STATE, useGetTasks } from '@/app/_actions/tasks'
+import { usePathname } from 'next/navigation'
+import { KanbanCard } from '@/app/_sections/tasks/tasks-kanban-board/kanban-card'
 
 export function KanbanBoard() {
+  const pathname = usePathname()
+  const slug = pathname.split('/')[2]
+  const { project } = useGetTasks(slug)
+  //
+  console.log({ project })
   const [kanban, setKanban] = useState<KanbanState>(INITIAL_KANBAN_STATE)
   const sheet = usePopover()
-  const router = useRouter()
   const [active, setActive] = useState<ActiveState>({
     id: '',
     type: '',
@@ -128,21 +131,6 @@ export function KanbanBoard() {
     // setViewTaskId(newTaskId)
   }
 
-  const onColumnAdd = useCallback((color: string, label: string) => {
-    setKanban((prev) => ({
-      ...prev,
-      columnOrder: [...prev.columnOrder, label],
-      columns: {
-        ...prev.columns,
-        [label]: {
-          color,
-          id: label,
-          title: label,
-          taskIds: [],
-        },
-      },
-    }))
-  }, [])
   return (
     <section className="h-full">
       <DndContext
@@ -156,21 +144,21 @@ export function KanbanBoard() {
       >
         <SortableContext items={kanban.columnOrder} strategy={horizontalListSortingStrategy}>
           <div className="flex min-h-full flex-row gap-4 overflow-hidden overflow-x-auto">
-            {kanban.columnOrder.map((columnId) => {
-              const column = kanban.columns[columnId]
+            {project?.columns?.map((column) => {
               return (
-                <Container key={columnId} column={column} id={columnId}>
-                  <SortableContext items={column.taskIds || []} strategy={verticalListSortingStrategy}>
-                    {column.taskIds.map((taskId) => (
-                      <KanbanCard
-                        key={taskId}
-                        handleOpenSheet={() => handleOpenSheet(taskId)}
-                        active={active}
-                        id={taskId}
-                        columnId={columnId}
-                        item={kanban.tasks[taskId]}
-                      />
-                    ))}
+                <Container key={column._id} column={column} id={column._id}>
+                  <SortableContext items={column?.taskIds || []} strategy={verticalListSortingStrategy}>
+                    {column?.tasks &&
+                      column?.tasks.map((task) => (
+                        <KanbanCard
+                          key={task._id}
+                          handleOpenSheet={() => handleOpenSheet(task._id)}
+                          active={active}
+                          id={task._id}
+                          columnId={column._id}
+                          item={task}
+                        />
+                      ))}
                   </SortableContext>
                 </Container>
               )
@@ -178,18 +166,7 @@ export function KanbanBoard() {
             {/*<AddColumnDialog onColumnAdd={onColumnAdd} />*/}
           </div>
         </SortableContext>
-        <DragOverlay>
-          {active.id && active.type === 'column' && (
-            <Container column={kanban.columns[active.id]} id={active.id}>
-              {kanban.columns[active.id].taskIds.map((taskId) => {
-                return <KanbanCard key={taskId} columnId={active.id.toString()} id={taskId} item={kanban.tasks[taskId]} />
-              })}
-            </Container>
-          )}
-          {active.id && active.type === 'item' && (
-            <KanbanCard key={active.id} columnId={active.columnId} id={active.id.toString()} item={kanban.tasks[active.id]} />
-          )}
-        </DragOverlay>
+        {/*YA*/}
       </DndContext>
       {/*<TaskViewSheet taskId={viewTaskId} open={sheet.open} onClose={sheet.onClose}/>*/}
     </section>

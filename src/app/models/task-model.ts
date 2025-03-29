@@ -64,5 +64,6 @@ const TaskSchema = new Schema(
 )
 
 TaskSchema.index({ columnId: 1, order: 1 }, { unique: true })
+TaskSchema.index({ projectId: 1 })
 
 export const Task = models.Task || model<ITask>('Task', TaskSchema)

@@ -1,4 +1,27 @@
-import { model, models, Schema } from 'mongoose'
+import { Task } from '@/app/models/task-model'
+
+import { Document, model, models, Schema, Types } from 'mongoose'
+
+export interface IColumn {
+  _id: Types.ObjectId
+  name: string
+  color: string
+  taskIds: Types.ObjectId[]
+}
+
+export interface IProject extends Document {
+  _id: Types.ObjectId
+  name: string
+  color: string
+  slug: string
+  description?: string
+  status: 'pending' | 'in-progress' | 'completed'
+  startDate?: Date
+  endDate?: Date
+  columns: IColumn[]
+  createdAt: Date
+  updatedAt: Date
+}
 
 const ColumnSchema = new Schema(
   {
@@ -22,5 +45,6 @@ const ProjectSchema = new Schema(
   },
   { timestamps: true }
 )
+ProjectSchema.index({ slug: 1 }, { unique: true })
 
-export const Project = models.Project || model('Project', ProjectSchema)
+export const Project = models.Project || model<IProject>('Project', ProjectSchema)

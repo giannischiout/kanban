@@ -7,4 +7,5 @@ export type Project = {
   endDate: Date;
   color: string;
   slug: string;
+  columns: []
 }

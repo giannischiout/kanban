@@ -9,6 +9,7 @@ import { UserProfile } from '@/app/_layouts/tasks/sidebar/components/sidebar-pro
 import { Favorites } from '@/app/_layouts/tasks/sidebar/components/sidebar-favorites'
 import { Employee } from '@/app/types/employee'
 import { Project } from '@/app/types/project'
+import { useBoolean } from '@/hooks/use-boolean'
 
 // To make all items align correctly total padding combined should be p-4 same applies for the vertical padding:
 // menu items have padding themselves. px-2 py-1
@@ -17,8 +18,10 @@ type SidebarProps = {
   projects: Project[]
 }
 export function SidebarMain({ user, projects }: SidebarProps) {
+  const { value: isOpen, onToggle: toggleProjects } = useBoolean(true)
+
   return (
-    <aside className="group flex max-w-72 select-none flex-col border-r border-border duration-1000 ease-in">
+    <aside className="group flex select-none flex-col border-r border-border duration-1000 ease-in">
       <div className="flex-1 overflow-y-auto">
         {/* and sidebar close action */}
         <UserProfile user={user} />
@@ -40,7 +43,7 @@ export function SidebarMain({ user, projects }: SidebarProps) {
         {/* Projects */}
         <div className="mb-2 overflow-scroll px-2 py-4">
           <div className="mb-1 flex items-center justify-between">
-            <div className="flex cursor-pointer items-center gap-1 rounded p-1 px-2">
+            <div onClick={toggleProjects} className="flex cursor-pointer items-center gap-1 rounded p-1 px-2">
               <ChevronDown className="text-muted-foreground" size={15} />
               <span className="font-medium">Projects</span>
             </div>
@@ -57,11 +60,11 @@ export function SidebarMain({ user, projects }: SidebarProps) {
             </div>
           </div>
           {/* project list */}
-          <GetProjects projects={projects} />
+          {isOpen && <GetProjects projects={projects} />}
         </div>
       </div>
       <div className="flex flex-col gap-2 border-t border-border p-4">
-        <Button className="to-primary-gradient flex items-center gap-2 rounded-md bg-gradient-to-r from-primary px-4 py-2 text-white hover:opacity-90">
+        <Button className="flex items-center gap-2 rounded-md bg-gradient-to-r from-primary to-primary-gradient px-4 py-2 text-white hover:opacity-90">
           <Zap className="h-5 w-5" />
           Upgrade
         </Button>

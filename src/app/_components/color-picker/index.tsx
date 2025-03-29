@@ -8,7 +8,6 @@ type Props = {
   onChange: (color: string) => void
 }
 export function ColorPicker({ onChange, color: newColor }: Props) {
-  console.log({ newColor })
   const [state, setState] = useState({
     batch: getBatch(COLORS, 0, 22),
     limit: 22,
@@ -42,7 +41,12 @@ export function ColorPicker({ onChange, color: newColor }: Props) {
         </Button>
         <div className="border-surface-300 flex h-8 max-w-[120px] items-center overflow-hidden rounded-md border p-1">
           <div className="h-full min-w-[24px] rounded-[4px]" style={{ backgroundColor: newColor || '#2e2e2e' }}></div>
-          <input onChange={(e) => onChange(e.target.value)} placeholder="choose color" value={newColor} className="bg-transparent px-2 text-[11px] outline-none" />
+          <input
+            onChange={(e) => onChange(e.target.value)}
+            placeholder="choose color"
+            value={newColor}
+            className="bg-transparent px-2 text-[11px] outline-none"
+          />
         </div>
       </div>
     </div>

@@ -1,5 +1,7 @@
 import { mock_assignees } from '@/app/mock/assignees'
-import { Task } from '@/app/types/kanban'
+import { IProject, Task } from '@/app/types/kanban'
+import { useQuery } from '@tanstack/react-query'
+import axios from 'axios'
 
 export const TASKS: Record<string, Task> = {
   'task-1': {
@@ -147,4 +149,34 @@ export const INITIAL_KANBAN_STATE = {
   },
   tasks: TASKS,
   columnOrder: ['open', 'progress', 'done'],
+}
+
+const fetchProjectById = async (slug: string | null): Promise<ApiData> => {
+  try {
+    const { data } = await axios.get(`/api/project/${slug}`)
+    return data
+  } catch (error) {
+    throw new Error('Error fetching project')
+  }
+}
+
+export type ApiData = {
+  result: IProject | null
+  success: boolean
+  message: string
+}
+
+export function useGetTasks(projectSlug: string) {
+  const { data, error, isLoading, isError, isSuccess } = useQuery<ApiData, Error>({
+    queryKey: ['project', projectSlug],
+    queryFn: () => fetchProjectById(projectSlug),
+    enabled: !!projectSlug,
+  })
+  return {
+    project: data?.result || null,
+    error,
+    isLoading,
+    isError,
+    isSuccess,
+  }
 }

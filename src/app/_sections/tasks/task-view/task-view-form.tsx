@@ -3,14 +3,11 @@ import { useForm } from 'react-hook-form'
 import { useCallback, useMemo } from 'react'
 import { z as zod } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
-import { Calendar, Search } from 'lucide-react'
-import { Button } from '@/app/_components/buttons'
+import { Search } from 'lucide-react'
 import { SelectAssignees } from '@/app/_components/hook-form/select-assignees'
 import { mock_assignees } from '@/app/mock/assignees'
 import { SelectDate } from '@/app/_components/hook-form/select-date'
-import dayjs from 'dayjs'
 
 const AssigneeSchema = zod.object({
   id: zod.number(),
@@ -61,7 +58,6 @@ export function TaskViewForm() {
   }
 
   const handleAssignee = (value) => {
-    console.log('change value: ', value)
     setValue('assignee', value)
   }
 
@@ -83,7 +79,13 @@ export function TaskViewForm() {
       <div className="flex w-full flex-col gap-2.5 pt-4">
         {/* assignee */}
         <div className="ml-2 grid grid-cols-[minmax(5px,100px)_auto] items-center justify-start gap-2.5">
-          <SelectAssignees options={Object.values(mock_assignees)} key="id" value={values.assignee} handleValue={handleAssignee} label="Assignee" />
+          <SelectAssignees
+            options={Object.values(mock_assignees)}
+            key="id"
+            value={values.assignee}
+            handleValue={handleAssignee}
+            label="Assignee"
+          />
         </div>
         <div className="ml-2 grid grid-cols-[minmax(5px,100px)_auto] items-center justify-start gap-2.5">
           <SelectDate value={values.dueDate} handleValue={handleDate} label="Due Date" />

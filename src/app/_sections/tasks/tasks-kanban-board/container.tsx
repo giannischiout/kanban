@@ -1,11 +1,11 @@
 import { ReactNode } from 'react'
-import { Column } from '@/app/types/kanban'
 import { useSortable } from '@dnd-kit/sortable'
 import { UniqueIdentifier } from '@dnd-kit/core'
+import { IColumn } from '@/app/types/kanban'
 
 type ContainerProps = {
   children: ReactNode
-  column: Column
+  column: IColumn
   id: UniqueIdentifier
 }
 export function Container({ children, column, id }: ContainerProps) {
@@ -25,7 +25,7 @@ export function Container({ children, column, id }: ContainerProps) {
       <div className="flex items-center justify-between rounded-md border border-border p-3" style={{ backgroundColor: 'white' }}>
         <div className="flex items-center justify-center gap-2">
           <Bullet color={column.color} />
-          <span className="text-center">{column.title}</span>
+          <span className="text-center">{column.name}</span>
           <span className="text-muted-foreground">{column.taskIds.length}</span>
         </div>
       </div>

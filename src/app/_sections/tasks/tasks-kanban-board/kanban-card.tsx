@@ -4,10 +4,10 @@ import { Priority } from '@/app/_components/priority'
 import { CardContent } from './kanban-card-content'
 
 import { Button } from '@/components/ui/button'
-import { ActiveState, Task } from '@/app/types/kanban'
+import { ActiveState, ITask } from '@/app/types/kanban'
 
 type KanbanCardProps = {
-  item: Task
+  item: ITask
   id: string
   active?: ActiveState
   columnId: string
@@ -16,8 +16,7 @@ type KanbanCardProps = {
 }
 
 export function KanbanCard({ handleOpenSheet = () => {}, item, id, active, columnId }: KanbanCardProps) {
-  const { title, priority, description, contributors } = item
-  console.log({ contributors })
+  const { title, priority, description } = item
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id,
     data: { type: 'item', columnId },
